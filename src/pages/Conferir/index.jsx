@@ -4,63 +4,64 @@ import {
   Text,
   TextInput,
   SafeAreaView,
-  StyleSheet,  
+  StyleSheet,
   Button,
-  Platform, 
+  Platform,
   ActivityIndicator,
-  Modal,  
+  Modal,
 } from "react-native";
 
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { FlatList } from "react-native-gesture-handler";
-import Toast from 'react-native-toast-message';
+import Toast from "react-native-toast-message";
 
 import { AuthContext } from "../../contexts/AuthContext";
 
 import ProductList from "../../components/ProductList";
 import { ModalCheckout } from "../../components/modalCheckout";
 
-export default function Separar() {  
+export default function Separar() {
   const [cardInfo, setCardInfo] = useState([]);
   const [products, setProducts] = useState([]);
   const [leitura, setLeitura] = useState([]);
-  const [inputValue, setInputValue ] = useState(''); 
-  const [awaitItems, setAwaitItems ] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [awaitItems, setAwaitItems] = useState(false);
   const [showFinishButton, setShowFinishButton] = useState(false);
   const [numPedido, setNumPedido] = useState(false);
-  const [isProductLoaded, setIsProductLoaded] = useState(false);  
+  const [isProductLoaded, setIsProductLoaded] = useState(false);
   const [modalLocationVisible, setModalLocationVisible] = useState(false);
-  const [location, setLocation] = useState('');
+  const [location, setLocation] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const route = useRoute();
-  const inputRef = useRef(null);  
-  const { getProductsToCheckOut, saveCheckOutProducts } = useContext(AuthContext);
+  const inputRef = useRef(null);
+  const { getProductsToCheckOut, saveCheckOutProducts } =
+    useContext(AuthContext);
 
   const navigation = useNavigation();
 
-  useEffect(() => {    
-    inputRef.current?.focus();    
+  useEffect(() => {
+    inputRef.current?.focus();
     const interval = setInterval(() => {
       if (inputRef.current && inputRef.current.isFocused() === false) {
         inputRef.current.focus();
       }
     }, 1000);
-    return () => clearInterval(interval); 
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
     async function getOrderProducts() {
       try {
-        let responseOrders = await getProductsToCheckOut(route.params.pedido);  
-        console.log(responseOrders)           
-     
-        setCardInfo(responseOrders.itens_card || []);       
-        setProducts(responseOrders.itens_pedido || []); 
-        setAwaitItems(responseOrders.awaitItems); 
-        console.log(awaitItems)            
-        setIsProductLoaded(true); 
+        let responseOrders = await getProductsToCheckOut(route.params.pedido);
+        console.log(responseOrders);
+
+        setCardInfo(responseOrders.itens_card || []);
+        setProducts(responseOrders.itens_pedido || []);
+        setAwaitItems(responseOrders.awaitItems);
+        console.log(awaitItems);
+        setIsProductLoaded(true);
       } catch (error) {
-        console.error('Error fetching product order:', error);
+        console.error("Error fetching product order:", error);
       }
     }
     getOrderProducts();
@@ -82,101 +83,109 @@ export default function Separar() {
     if (isProductLoaded) {
       const completScan = products.find((product) => !product.conferido);
       if (!completScan) {
-        console.log('Todos os produtos escaneados.');
+        console.log("Todos os produtos escaneados.");
         finishSeparete();
       }
     }
   }, [products, isProductLoaded]);
 
-  function finishSeparete(){    
-    setShowFinishButton(true);    
+  function finishSeparete() {
+    setShowFinishButton(true);
   }
 
-  async function handleFinishSeparate() {    
+  async function handleFinishSeparate() {
     setIsLoading(true); // Iniciar carregamento
     try {
       await saveCheckOutProducts(products, location);
       setIsLoading(false);
     } catch (error) {
-      navigation.navigate('Conferencias', {
-        toastType: 'error',
-        toastText1: 'Erro',
-        toastText2: 'Ocorreu um erro ao finalizar a separação'
+      navigation.navigate("Conferencias", {
+        toastType: "error",
+        toastText1: "Erro",
+        toastText2: "Ocorreu um erro ao finalizar a separação",
       });
     } finally {
-      navigation.navigate('Conferencias', {
-        toastType: 'success',
-        toastText1: 'Pedido conferido!',
-        toastText2: 'Conferencia finalizada, emitindo NF!'
+      navigation.navigate("Conferencias", {
+        toastType: "success",
+        toastText1: "Pedido conferido!",
+        toastText2: "Conferencia finalizada, emitindo NF!",
       });
     }
   }
 
-  const handleInputChange = (text) => {     
-    let qrValue = text.split(/[;�:]/); 
-    setInputValue('');
+  const handleInputChange = (text) => {
+    let qrValue = text.split(/[;�:]/);
+    setInputValue("");
     setLeitura(qrValue);
   };
 
   function verifyItem() {
     let item;
-    const verifiyCode = products.find((product) => product.cod_prod === leitura[0] && (product.num_serie === leitura[1] || product.lote === leitura[1]))
+    const verifiyCode = products.find(
+      (product) =>
+        product.cod_prod === leitura[0] &&
+        (product.num_serie === leitura[1] || product.lote === leitura[1]),
+    );
 
-    if(verifiyCode){
+    if (verifiyCode) {
       item = products.find(
-        (product) => product.cod_prod === leitura[0] && (product.num_serie === leitura[1] || product.lote === leitura[1]) && !product.conferido
-      );          
-    }else{      
-      showToast('error', 'Leitura Invalida', 'Item não pertence ao pedido!');
-      return
-    }    
+        (product) =>
+          product.cod_prod === leitura[0] &&
+          (product.num_serie === leitura[1] || product.lote === leitura[1]) &&
+          !product.conferido,
+      );
+    } else {
+      showToast("error", "Leitura Invalida", "Item não pertence ao pedido!");
+      return;
+    }
     if (item) {
-      item.conferido = '1'      
+      item.conferido = "1";
       setProducts([...products]);
       setCardInfo((prevCardInfo) =>
         prevCardInfo.map((card) =>
           card.cod_prod === item.cod_prod
-            ? { ...card, qtd_leituras: (parseInt(card.qtd_leituras) + 1).toString() }
-            : card
-        )
+            ? {
+                ...card,
+                qtd_leituras: (parseInt(card.qtd_leituras) + 1).toString(),
+              }
+            : card,
+        ),
       );
-
-    }else{      
-      showToast('error', 'Leitura Invalida', 'Esse item ja foi conferido!')     
-      return
+    } else {
+      showToast("error", "Leitura Invalida", "Esse item ja foi conferido!");
+      return;
     }
-    
   }
   const showToast = (type, txt1, txt2) => {
     Toast.show({
       type: type,
       text1: txt1,
-      text2: txt2
+      text2: txt2,
     });
-  }  
+  };
 
-  function handleLocation(){
+  function handleLocation() {
     setModalLocationVisible(true);
   }
 
   const handleSaveLocation = (location) => {
     setLocation(location);
   };
-  
+
   return (
-    <SafeAreaView style={styles.container1}>      
-        <TextInput
-          ref={inputRef}
-          value={inputValue}
-          style={styles.input}
-          onChangeText={text => {
-            setInputValue(text);
-            handleInputChange(text);
-          }}
-          autoFocus={true}
-          keyboardType="default"
-          showSoftInputOnFocus={Platform.OS === 'android' ? false : undefined} // Desabilitar o teclado no Android
-        />
+    <SafeAreaView style={styles.container1}>
+      <TextInput
+        ref={inputRef}
+        value={inputValue}
+        style={styles.input}
+        onChangeText={(text) => {
+          setInputValue(text);
+          handleInputChange(text);
+        }}
+        autoFocus={true}
+        keyboardType="default"
+        showSoftInputOnFocus={Platform.OS === "android" ? false : undefined} // Desabilitar o teclado no Android
+      />
       {/* {
         awaitItems && (
           <Text style={styles.awaitItemsText}>
@@ -186,11 +195,9 @@ export default function Separar() {
       } */}
       <FlatList
         data={cardInfo}
-        renderItem={({ item }) => (
-          <ProductList data={item} />
-        )}
+        renderItem={({ item }) => <ProductList data={item} />}
         keyExtractor={(item) => item.cod_prod}
-      /> 
+      />
       {showFinishButton && (
         <View style={styles.buttonContainer}>
           {isLoading ? (
@@ -198,30 +205,32 @@ export default function Separar() {
           ) : (
             <>
               <Button
-                  title="Localização"
-                  onPress={handleLocation}
-                  style={styles.printButton}
-              /> 
+                title="Localização"
+                onPress={handleLocation}
+                style={styles.printButton}
+              />
               <Button
                 title="Finalizar Separação"
                 onPress={handleFinishSeparate}
-              />            
+              />
             </>
           )}
         </View>
       )}
       <Modal
-          transparent={true}
-          visible={modalLocationVisible}
-          animationType="fade"
+        transparent={true}
+        visible={modalLocationVisible}
+        animationType="fade"
       >
-      <ModalCheckout
-          handleCloseModal={() => { setModalLocationVisible(false) }}
+        <ModalCheckout
+          handleCloseModal={() => {
+            setModalLocationVisible(false);
+          }}
           numPed={numPedido}
           onSaveLocation={handleSaveLocation} // Passa a função de callback para o modal
           // options={products}
           // selectedItem={handleChangeProduct}
-      />
+        />
       </Modal>
     </SafeAreaView>
   );
@@ -252,7 +261,7 @@ const styles = StyleSheet.create({
     color: "white", // Cor do texto
   },
   hiddenInput: {
-    position: 'absolute',
+    position: "absolute",
     top: -1000, // Mantém o input fora da tela
     height: 0, // Sem altura visível
     width: 0, // Sem largura visível
@@ -262,10 +271,9 @@ const styles = StyleSheet.create({
     height: 10,
     opacity: 0,
   },
-  awaitItemsText:{
-    color: 'red',
-    fontWeight: 'bold',
+  awaitItemsText: {
+    color: "red",
+    fontWeight: "bold",
     fontSize: 15,
-  }
-
+  },
 });

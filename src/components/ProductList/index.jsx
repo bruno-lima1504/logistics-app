@@ -1,21 +1,20 @@
 import React from "react";
 import { Text, TouchableOpacity, StyleSheet } from "react-native";
 
-export default function ProductList({ data }) {    
-  
-  const backgroundColor = data.qtd_leituras === '0' 
-  ? "#a39292" :
-   data.qtd_leituras === data.qtd_total ?
-    "#00FF7F" :
-    "#FF8C00"
-   ;
+export default function ProductList({ data }) {
+  const backgroundColor =
+    data.qtd_leituras === "0"
+      ? "#a39292"
+      : data.qtd_leituras === data.qtd_total
+        ? "#00FF7F"
+        : "#FF8C00";
   const dynamicStyles = { ...styles.orderCard, backgroundColor };
-  
+
   return (
-    <TouchableOpacity style={dynamicStyles} >
+    <TouchableOpacity style={dynamicStyles}>
       <Text style={styles.orderNum}>Cod. Produto: {data.cod_prod}</Text>
       <Text style={styles.orderDescProd}>Desc. Produto: {data.prod_desc}</Text>
-      <Text style={styles.bodyText}>Localização: {data.localizacao}</Text>      
+      <Text style={styles.bodyText}>Localização: {data.localizacao}</Text>
 
       <Text style={styles.bodyText}>
         Quantidade: {data.qtd_leituras} / {data.qtd_total}

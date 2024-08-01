@@ -1,13 +1,17 @@
 import React, { useContext, useEffect, useState, useCallback } from "react";
 import { View, Text, FlatList, SafeAreaView, StyleSheet } from "react-native";
-import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
-import Toast from 'react-native-toast-message';
+import {
+  useNavigation,
+  useRoute,
+  useFocusEffect,
+} from "@react-navigation/native";
+import Toast from "react-native-toast-message";
 import { AuthContext } from "../../contexts/AuthContext";
 
 import OrderList from "../../components/OrderList";
 
 export default function Pedidos() {
-  const [orders, setOrders] = useState([]);  
+  const [orders, setOrders] = useState([]);
   const { getOrders, singOut } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
@@ -17,22 +21,22 @@ export default function Pedidos() {
     Toast.show({
       type: type,
       text1: txt1,
-      text2: txt2
+      text2: txt2,
     });
   };
-  
+
   useFocusEffect(
     useCallback(() => {
       let isActive = true;
-  
+
       async function getOrdersList() {
         if (isActive) {
           setLoading(true); // Define o carregamento como verdadeiro quando a página é focada
           try {
-            let responseOrders = await getOrders();        
-            setOrders(responseOrders.pedidos || []);      
+            let responseOrders = await getOrders();
+            setOrders(responseOrders.pedidos || []);
           } catch (error) {
-            console.error('Error fetching orders:', error);
+            console.error("Error fetching orders:", error);
           } finally {
             if (isActive) {
               setLoading(false); // Define o carregamento como falso após a chamada
@@ -40,19 +44,19 @@ export default function Pedidos() {
           }
         }
       }
-  
+
       getOrdersList();
-  
+
       return () => {
         isActive = false; // Cleanup function to prevent state updates if component is unmounted
       };
-    }, [])
+    }, []),
   );
   // useEffect(() => {
   //   async function getOrdersList(){
-  //     if (loading) { // Verifica se está carregando        
-  //       let responseOrders = await getOrders();        
-  //       setOrders(responseOrders.pedidos || []);      
+  //     if (loading) { // Verifica se está carregando
+  //       let responseOrders = await getOrders();
+  //       setOrders(responseOrders.pedidos || []);
   //       setLoading(false); // Define o carregamento como falso após a chamada
   //     }
   //   }
@@ -61,26 +65,30 @@ export default function Pedidos() {
 
   useEffect(() => {
     if (route.params?.toastType) {
-      showToast(route.params.toastType, route.params.toastText1, route.params.toastText2);
+      showToast(
+        route.params.toastType,
+        route.params.toastText1,
+        route.params.toastText2,
+      );
 
       // Limpar os parâmetros após exibir o toast
       navigation.setParams({
         toastType: undefined,
         toastText1: undefined,
-        toastText2: undefined
+        toastText2: undefined,
       });
     }
 
-    async function getOrdersList(){
+    async function getOrdersList() {
       let responseOrders = await getOrders();
       setOrders(responseOrders.pedidos || []);
     }
     getOrdersList();
   }, [route.params]);
-  console.log(orders)
+  console.log(orders);
 
   return (
-    <SafeAreaView style={styles.container}>      
+    <SafeAreaView style={styles.container}>
       <FlatList
         data={orders}
         keyExtractor={(item) => String(item.id_separar_pedidos)}

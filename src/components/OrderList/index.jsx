@@ -4,14 +4,16 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 export default function OrderList({ data }) {
-  
-  const navigation = useNavigation();  
+  const navigation = useNavigation();
 
   function separeteOrders(order) {
-    console.log(order)        
-        navigation.navigate((data.status_produto_atual === "BQ" ? "Separar" : "Conferir"), {
-      pedido: order,
-    });
+    console.log(order);
+    navigation.navigate(
+      data.status_produto_atual === "BQ" ? "Separar" : "Conferir",
+      {
+        pedido: order,
+      },
+    );
   }
 
   function formatarData(data) {
@@ -19,7 +21,7 @@ export default function OrderList({ data }) {
     const mes = data.substring(4, 6);
     const dia = data.substring(6, 8);
     return `${dia}/${mes}/${ano}`;
-  }  
+  }
   return (
     <TouchableOpacity
       style={styles.orderCard}
@@ -31,7 +33,9 @@ export default function OrderList({ data }) {
       <Text style={styles.bodyText}>
         Cliente: {data.cod_cliente} - Loja:{data.loja}
       </Text>
-      <Text style={styles.bodyText}>Data Liberação: {formatarData(data.data_liberacao)}</Text>      
+      <Text style={styles.bodyText}>
+        Data Liberação: {formatarData(data.data_liberacao)}
+      </Text>
       <Text style={styles.bodyText}>Quantidade: {data.quantidade_itens}</Text>
       {/* {
         (data.controle_qualidade === "1" && data.libera_cont_qual !== "0") && 
@@ -51,21 +55,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#FFF",
     marginTop: 15,
-    borderRadius: 4,    
+    borderRadius: 4,
   },
   orderNum: {
     fontSize: 20,
     marginBottom: 5,
     padding: 5,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   bodyText: {
     margin: 5,
   },
-  alertText:{
+  alertText: {
     color: "red",
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginHorizontal: 10,
     paddingHorizontal: 5,
-  }
+  },
 });

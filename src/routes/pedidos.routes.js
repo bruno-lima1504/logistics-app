@@ -8,10 +8,10 @@ const Stack = createNativeStackNavigator();
 
 function PedidosRoute() {
   return (
-    <Stack.Navigator>      
-      <Stack.Screen   
-        name="Pedidos" 
-        component={Pedidos} 
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Pedidos"
+        component={Pedidos}
         // key={route.params.pedido}
         options={{ headerShown: false }}
       />

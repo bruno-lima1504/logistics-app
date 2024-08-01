@@ -20,7 +20,6 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [credentialsMsg, setCredentialsMsg] = useState(true);
   const [productsToScan, setProductsToScan] = useState([]);
-  
 
   //verifica se existe algum dado na variavel passada e grava um  boolean na variavel declarada.
   const isAuthenticated = !!user.name;
@@ -80,7 +79,7 @@ export function AuthProvider({ children }) {
         sellerId,
         userIdGroup,
       });
-      
+
       setLoadingAuth(false);
     } catch (err) {
       console.log("erro ao acessar -> " + err);
@@ -115,43 +114,43 @@ export function AuthProvider({ children }) {
       const response = await api.post("/separapedidos/separacao", {
         pedido: pedido,
       });
-      let responseData = response.data;   
+      let responseData = response.data;
       return responseData;
     } catch (error) {
       console.log(error);
     }
   }
-  
-  async function saveSeparateProducts(products){
-    try { 
+
+  async function saveSeparateProducts(products) {
+    try {
       const response = await api.post("/savesepareteproducts", {
-        products: products, 
-        user: user
+        products: products,
+        user: user,
       });
 
       // Pegue o status da resposta
       const status = response.status;
 
       if (status === 200) {
-          console.log('Separação finalizada com sucesso');
-          console.log(response.data); // Mensagem da resposta
+        console.log("Separação finalizada com sucesso");
+        console.log(response.data); // Mensagem da resposta
       } else {
-          console.log('Ocorreu algum problema, status:', status);
-          console.log(response.data); // Mensagem da resposta
+        console.log("Ocorreu algum problema, status:", status);
+        console.log(response.data); // Mensagem da resposta
       }
     } catch (error) {
-        if (error.response) {
-            // Erro de resposta do servidor
-            console.log('Erro:', error.response.status);
-            console.log(error.response.data); // Mensagem da resposta
-        } else {
-            // Erro de configuração da solicitação ou outro erro
-            console.log('Erro:', error.message);
-        }
+      if (error.response) {
+        // Erro de resposta do servidor
+        console.log("Erro:", error.response.status);
+        console.log(error.response.data); // Mensagem da resposta
+      } else {
+        // Erro de configuração da solicitação ou outro erro
+        console.log("Erro:", error.message);
+      }
     }
   }
 
-  async function getOrdersToCheckOut(){
+  async function getOrdersToCheckOut() {
     try {
       const response = await api.get("/conferepedidos");
       return response.data;
@@ -160,81 +159,79 @@ export function AuthProvider({ children }) {
     }
   }
 
-  async function getProductsToCheckOut(pedido){
-    try{           
-      const response = await api.post("/produtosaconferir",{
+  async function getProductsToCheckOut(pedido) {
+    try {
+      const response = await api.post("/produtosaconferir", {
         pedido: pedido,
-      })
-      let responseData = response.data;              
+      });
+      let responseData = response.data;
       return responseData;
-    } catch(error) {       
-      console.log(error)
+    } catch (error) {
+      console.log(error);
     }
   }
 
-  async function saveCheckOutProducts(products, location ){
+  async function saveCheckOutProducts(products, location) {
+    let checkedProducts = [];
 
-    let checkedProducts = [];   
-    
     products.map((product) => {
-      console.log();     
+      console.log();
       let item = {
         id_produtos_separar_pedido: product.id_produtos_separar_pedido,
         conferido: product.conferido,
         num_pedido: product.num_pedido,
         cod_prod: product.cod_prod,
-        item: product.item
-      }
+        item: product.item,
+      };
       checkedProducts.push(item);
-    })
+    });
 
-    try {       
+    try {
       const response = await api.post("/savecheckoutproducts", {
-        pedidos: checkedProducts, 
+        pedidos: checkedProducts,
         user: user,
-        local: location
+        local: location,
       });
       // Pegue o status da resposta
       const status = response.status;
 
       if (status === 200) {
-          console.log('Separação finalizada com sucesso');
-          console.log(response.data); // Mensagem da resposta
+        console.log("Separação finalizada com sucesso");
+        console.log(response.data); // Mensagem da resposta
       } else {
-          console.log('Ocorreu algum problema, status:', status);
-          console.log(response.data); // Mensagem da resposta
+        console.log("Ocorreu algum problema, status:", status);
+        console.log(response.data); // Mensagem da resposta
       }
     } catch (error) {
-        if (error.response) {
-            // Erro de resposta do servidor
-            console.log('Erro:', error.response.status);
-            console.log(error.response.data); // Mensagem da resposta
-        } else {
-            // Erro de configuração da solicitação ou outro erro
-            console.log('Erro:', error.message);
-        }
+      if (error.response) {
+        // Erro de resposta do servidor
+        console.log("Erro:", error.response.status);
+        console.log(error.response.data); // Mensagem da resposta
+      } else {
+        // Erro de configuração da solicitação ou outro erro
+        console.log("Erro:", error.message);
+      }
     }
   }
 
-  async function printTag(numPed, qtd, idPedido){
-    
-     const print = {
-       "pedido": `${idPedido}:${numPed}`,
-       "name": user.name,
-       "quantidade": qtd
-     }
-     console.log(print)
+  async function printTag(numPed, qtd, idPedido) {
+    const print = {
+      pedido: `${idPedido}:${numPed}`,
+      name: user.name,
+      quantidade: qtd,
+    };
+    console.log(print);
 
-    try{
-     const response = await api.post("/etiqueta", {
-        print
+    try {
+      const response = await api.post("/etiqueta", {
+        print,
       });
-      console.log(response)      
+      console.log(response);
       return response.status;
-    }catch(err){
-      console.log(err)
+    } catch (err) {
+      console.log(err);
     }
-  };
+  }
 
   return (
     <AuthContext.Provider
@@ -253,7 +250,7 @@ export function AuthProvider({ children }) {
         getOrdersToCheckOut,
         getProductsToCheckOut,
         saveCheckOutProducts,
-        printTag,        
+        printTag,
       }}
     >
       {children}
