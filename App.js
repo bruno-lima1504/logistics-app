@@ -6,6 +6,8 @@ import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
 
 import { AuthProvider } from "./src/contexts/AuthContext";
 
+import "./src/styles/global.css";
+
 import Routes from "./src/routes";
 const toastConfig = {
   success: (props) => (
