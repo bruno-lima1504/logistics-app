@@ -47,7 +47,6 @@ export function AuthProvider({ children }) {
 
   async function signIn({ usuario, password }) {
     setLoadingAuth(true);
-
     try {
       const response = await api.post("/loginapi", {
         usuario: usuario,
@@ -102,7 +101,7 @@ export function AuthProvider({ children }) {
 
   async function getOrders() {
     try {
-      const response = await api.get("/separapedidos");
+      const response = await api.get("/separacao");
       return response.data;
     } catch (error) {
       console.log(error);

@@ -7,7 +7,6 @@ export default function OrderList({ data }) {
   const navigation = useNavigation();
 
   function separeteOrders(order) {
-    console.log(order);
     navigation.navigate(
       data.status_produto_atual === "BQ" ? "Separar" : "Conferir",
       {
@@ -26,7 +25,7 @@ export default function OrderList({ data }) {
     <TouchableOpacity
       style={styles.orderCard}
       onPress={() => {
-        separeteOrders(data.id_separar_pedidos);
+        separeteOrders(data.id_pedidos);
       }}
     >
       <Text style={styles.orderNum}>Pedido: {data.num_pedido}</Text>

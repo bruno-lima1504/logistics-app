@@ -1,17 +1,17 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import Pedidos from "../pages/Separação";
+import Separacao from "../pages/Separacao";
 import Separar from "../pages/Separar";
 
 const Stack = createNativeStackNavigator();
 
-function PedidosRoute() {
+function SeparacaoRoute() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="Pedidos"
-        component={Pedidos}
+        name="Separacao"
+        component={Separacao}
         // key={route.params.pedido}
         options={{ headerShown: false }}
       />
@@ -24,4 +24,4 @@ function PedidosRoute() {
   );
 }
 
-export default PedidosRoute;
+export default SeparacaoRoute;

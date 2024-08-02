@@ -10,7 +10,7 @@ import { AuthContext } from "../../contexts/AuthContext";
 
 import OrderList from "../../components/OrderList";
 
-export default function Pedidos() {
+export default function Separacao() {
   const [orders, setOrders] = useState([]);
   const { getOrders, singOut } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
@@ -28,7 +28,6 @@ export default function Pedidos() {
   useFocusEffect(
     useCallback(() => {
       let isActive = true;
-
       async function getOrdersList() {
         if (isActive) {
           setLoading(true); // Define o carregamento como verdadeiro quando a página é focada
@@ -85,13 +84,12 @@ export default function Pedidos() {
     }
     getOrdersList();
   }, [route.params]);
-  console.log(orders);
 
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
         data={orders}
-        keyExtractor={(item) => String(item.id_separar_pedidos)}
+        keyExtractor={(item) => String(item.id_pedidos)}
         renderItem={({ item }) => <OrderList data={item} />}
       />
     </SafeAreaView>
